@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  web-ui:
+    image: aolb/localstack-web-ui:latest
+    container_name: localstack-web-ui
+    ports:
+      - "8081:80"
+    networks:
+      - my-dev
+
+  localstack:
+    image: localstack/localstack:latest
+    container_name: localstack
+    ports:
+      - "4566:4566" # LocalStack edge port
+      - "4576:4576" # SQS
+      - "4575:4575" # Lambda
+      - "4570:4570" # SNS
+    environment:
+      - SERVICES=s3,sqs,sns,ec2,lambda
+      - DEBUG=1
+      - DATA_DIR=/tmp/localstack/data
+      - DOCKER_HOST=unix:///var/run/docker.sock
+    volumes:
+      # - "localstack_data:/tmp/localstack" # Use a named volume instead of a bind mount
+      # - "./localstack:/tmp/localstack" # Ensure this volume path is correct
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      # - "./built/lambda/:/var/task/"
+    networks:
+      - my-dev
+
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: mydatabase
+      MYSQL_USER: myuser
+      MYSQL_PASSWORD: mypassword
+    volumes:
+      - "deploygroup_data:/var/lib/mysql"
+    networks:
+      - my-dev
+
+volumes:
+  #localstack_data:
+  deploygroup_data:
+
+networks:
+  my-dev:
+    driver: bridge
+    

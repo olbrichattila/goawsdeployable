@@ -1,0 +1,5 @@
+example
+    /=TestHandler
+    /del=TestHandler2
+example2
+    /add=TestHandler

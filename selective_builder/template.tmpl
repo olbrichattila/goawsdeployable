@@ -1,0 +1,17 @@
+package main
+
+import (
+	"fmt"
+<--imports-->
+)
+
+func main() {
+	listener := connector.New()
+	listener.Port(<--port-->)
+	err := listener.Start(
+<--handlers-->    )
+
+	if err != nil {
+		fmt.Println(err)
+	}
+}
