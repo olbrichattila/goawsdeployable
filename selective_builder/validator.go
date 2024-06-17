@@ -48,6 +48,7 @@ func (t *buildValidator) convertErrorsToError(errors []error) error {
 }
 
 func (t *buildValidator) validatePackage(buildPackage Package) []error {
+	// TODO: Review this and simplify, too high complexity in this function, extract, early return where possible
 	var errors []error
 	packageDirectory := sourceFolder + buildPackage.Name
 	if _, err := os.Stat(packageDirectory); os.IsNotExist(err) {
