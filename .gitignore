@@ -1,2 +1,4 @@
 .vscode
-selective_builder/build/
+built
+prebuild_http
+prebuild_lambda

@@ -1,10 +1,9 @@
 go 1.18
 
 use (
-	.
 	./selective_builder
-	./src/deploymet_wrapper/http
-	./src/deploymet_wrapper/lambda
+	./src/deployment_wrapper/http
+	./src/deployment_wrapper/lambda
 	./src/packages
 	./src/packages/example
 	./src/packages/example2

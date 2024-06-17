@@ -3,7 +3,7 @@ build-lambda:
 	./build-lambda.sh
 deploy-lambda:
 	./redeploy-lambda.sh
-run-labmda:
+run-lambda:
 	 ./docker/test-lambda-function.sh
 lint:
 	gocritic check ./...

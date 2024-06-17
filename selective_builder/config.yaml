@@ -1,0 +1,17 @@
+port: 8080
+lambda:
+  packages:
+    - name: example
+      functions: 
+        - route: /:TestHandler
+    - name: example2
+      functions: 
+        - route: /add:TestHandler
+http:
+  packages:
+    - name: example
+      functions: 
+        - route: /:TestHandler
+    - name: example2
+      functions: 
+        - route: /add:TestHandler

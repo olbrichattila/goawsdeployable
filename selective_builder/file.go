@@ -17,9 +17,9 @@ func copyDir(src string, dest string) error {
 	if err != nil {
 		return err
 	}
-	mkDir(dest)
 
 	for _, f := range *files {
+		mkDir(dest + f.relPath)
 		err := copyFile(f.path, dest+f.relPath+"/"+f.fileInfo.Name())
 		if err != nil {
 			return err

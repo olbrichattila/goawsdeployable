@@ -2,9 +2,9 @@ module olbrichattila.co.uk/test
 
 go 1.18
 
-replace olbrichattila.co.uk/httpwrapper => ../deploymet_wrapper/http
+replace olbrichattila.co.uk/httpwrapper => ../deployment_wrapper/http
 
-replace olbrichattila.co.uk/lambdawrapper => ../deploymet_wrapper/lambda
+replace olbrichattila.co.uk/lambdawrapper => ../deployment_wrapper/lambda
 
 replace olbrichattila.co.uk/example => ./example
 
