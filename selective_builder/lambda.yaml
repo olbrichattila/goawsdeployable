@@ -1,0 +1,21 @@
+port: 8080
+lambda:
+  packages:
+    - name: somePackageName
+      functions: 
+        - route: /:functionname1
+        - route: /:functionname2
+    - name: somePackageName2
+      functions: 
+        - route: /:functionname1
+        - route: /:functionname2
+http:
+  packages:
+    - name: somePackageName
+      functions: 
+        - route: /:functionname1
+        - route: /:functionname2
+    - name: somePackageName2
+      functions: 
+        - route: /:functionname1
+        - route: /:functionname2

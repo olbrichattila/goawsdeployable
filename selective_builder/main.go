@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"io/ioutil"
+	"strconv"
 	"strings"
 )
 
@@ -16,9 +17,11 @@ const (
 func main() {
 	fmt.Println("Selective builder")
 
-	environments, err := newEnvLister().load()
+	conf := newYamlConfig()
+	config, err := conf.pharse()
 	if err != nil {
 		fmt.Println(err)
+		return
 	}
 
 	err = rmDir(buildFolder)
@@ -26,51 +29,42 @@ func main() {
 		fmt.Println(err)
 	}
 
-	for _, env := range environments {
-		src := sourceFolder + env.name
-		dest := buildFolder + env.name
-		fmt.Printf("- copy %s to %s\n", src, dest)
+	// Print the parsed data
+	fmt.Printf("Port: %d\n", config.Port)
 
-		err = copyDir(src, dest)
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
-	}
+	// do for lamdba or HTTP depending on command line arg
+	imports := getImports(config.Lambda.Packages)
+	handlers := getHandlers(config.Lambda.Packages)
 
-	imports := getImports(environments)
-	handlers := getHandlers(environments)
-
-	createMainFile(imports, handlers)
+	createMainFile(imports, handlers, config.Port)
 }
 
-func getImports(packages []*packageInfo) string {
+func getImports(packages []Package) string {
 	var builder strings.Builder
 	// TODO decide lambda or http
 
 	for _, packageInfo := range packages {
-		builder.WriteString(fmt.Sprintf("	\"olbrichattila.co.uk/%s\"\n", packageInfo.name))
+		builder.WriteString(fmt.Sprintf("	\"olbrichattila.co.uk/%s\"\n", packageInfo.Name))
 	}
 
 	builder.WriteString(fmt.Sprintf("	%s", lambdaImport))
 	return builder.String()
 }
 
-func getHandlers(packages []*packageInfo) string {
+func getHandlers(packages []Package) string {
 	var builder strings.Builder
 	for _, packageInfo := range packages {
-		fmt.Println(packageInfo.functions)
-		for _, handlerInfo := range packageInfo.functions {
-			handlerParts := strings.Split(handlerInfo, "=")
+		for _, handlerInfo := range packageInfo.Functions {
+			handlerParts := strings.Split(handlerInfo.Route, ":")
 			builder.WriteString(
-				fmt.Sprintf("		connector.HandlerDef{Route: \"%s\", Handler: %s.%s},\n", handlerParts[0], packageInfo.name, handlerParts[1]),
+				fmt.Sprintf("		connector.HandlerDef{Route: \"%s\", Handler: %s.%s},\n", handlerParts[0], packageInfo.Name, handlerParts[1]),
 			)
 		}
 	}
 
 	return builder.String()
 }
-func createMainFile(imports, handlers string) {
+func createMainFile(imports, handlers string, port int) {
 
 	inputFile := "template.tmpl"
 	outputFile := "build/main.go"
@@ -85,7 +79,7 @@ func createMainFile(imports, handlers string) {
 	newContent := string(content)
 	newContent = strings.ReplaceAll(newContent, "<--imports-->", imports)
 	newContent = strings.ReplaceAll(newContent, "<--handlers-->", handlers)
-	newContent = strings.ReplaceAll(newContent, "<--port-->", "8000") // todo config
+	newContent = strings.ReplaceAll(newContent, "<--port-->", strconv.Itoa(port)) // todo config
 
 	// Write the modified content to the output file
 	err = ioutil.WriteFile(outputFile, []byte(newContent), 0644)
