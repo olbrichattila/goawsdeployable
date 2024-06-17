@@ -12,3 +12,4 @@ This package contains a test docker image, using AWS localstack
 
 Frontend to look into your S3, SNS and SQS queues
 
+In the prebuilt_http function run it with go run main.go (not dot)
