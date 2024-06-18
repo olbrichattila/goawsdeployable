@@ -35,24 +35,11 @@ func (t *buildValidator) validate(packages []Package) error {
 	return t.convertErrorsToError(errors)
 }
 
-func (t *buildValidator) convertErrorsToError(errors []error) error {
-	if len(errors) == 0 {
-		return nil
-	}
+func (t *buildValidator) init(buildPackage Package) ([]string, []*funcLookupResult, *[]fileInfo, error) {
 
-	var builder strings.Builder
-	for _, e := range errors {
-		builder.WriteString(fmt.Sprintln(e.Error()))
-	}
-	return fmt.Errorf(builder.String())
-}
-
-func (t *buildValidator) validatePackage(buildPackage Package) []error {
-	// TODO: Review this and simplify, too high complexity in this function, extract, early return where possible
-	var errors []error
 	packageDirectory := sourceFolder + buildPackage.Name
 	if _, err := os.Stat(packageDirectory); os.IsNotExist(err) {
-		return []error{fmt.Errorf("the %s package does not exists", buildPackage.Name)}
+		return nil, nil, nil, fmt.Errorf("the %s package does not exists", buildPackage.Name)
 	}
 
 	routePaths := make([]string, len(buildPackage.Functions))
@@ -66,6 +53,27 @@ func (t *buildValidator) validatePackage(buildPackage Package) []error {
 
 	files, err := readDir(packageDirectory)
 	if err != nil {
+		return nil, nil, nil, err
+	}
+	return routePaths, functionLookups, files, nil
+
+}
+
+func (t *buildValidator) convertErrorsToError(errors []error) error {
+	if len(errors) == 0 {
+		return nil
+	}
+
+	var builder strings.Builder
+	for _, e := range errors {
+		builder.WriteString(fmt.Sprintln(e.Error()))
+	}
+	return fmt.Errorf(builder.String())
+}
+
+func (t *buildValidator) validatePackage(buildPackage Package) []error {
+	routePaths, functionLookups, files, err := t.init(buildPackage)
+	if err != nil {
 		return []error{err}
 	}
 
@@ -76,25 +84,51 @@ func (t *buildValidator) validatePackage(buildPackage Package) []error {
 				return []error{err}
 			}
 
-			for _, funcLookup := range functionLookups {
-				if !funcLookup.found {
-					match, err := t.validateFunctionsExistsInGoFile(f.path, funcLookup.name, content)
-					if err != nil {
-						return []error{err}
-					}
-					funcLookup.found = match
-				}
+			err = t.valudateFunctions(f.path, functionLookups, content)
+			if err != nil {
+				return []error{err}
 			}
-
 		}
 	}
 
+	return t.getCombinerErrors(functionLookups, routePaths)
+}
+
+func (t *buildValidator) valudateFunctions(path string, functionLookups []*funcLookupResult, content string) error {
+	for _, funcLookup := range functionLookups {
+		if !funcLookup.found {
+			match, err := t.validateFunctionsExistsInGoFile(path, funcLookup.name, content)
+			if err != nil {
+				return err
+			}
+			funcLookup.found = match
+		}
+	}
+
+	return nil
+}
+
+func (t *buildValidator) getCombinerErrors(functionLookups []*funcLookupResult, routePaths []string) []error {
+	lookupErrors := t.functinLookupErrors(functionLookups)
+	duplicateErrors := t.duplicateErrors(routePaths)
+
+	return append(lookupErrors, duplicateErrors...)
+
+}
+
+func (t *buildValidator) functinLookupErrors(functionLookups []*funcLookupResult) []error {
+	var errors []error
 	for _, funcLookup := range functionLookups {
 		if !funcLookup.found {
 			errors = append(errors, fmt.Errorf("the %s hanler not implemented in package %s", funcLookup.name, funcLookup.packageName))
 		}
 	}
 
+	return errors
+}
+
+func (t *buildValidator) duplicateErrors(routePaths []string) []error {
+	var errors []error
 	duplicates := t.findRepeatedElements(routePaths)
 	for _, duplicate := range duplicates {
 		errors = append(errors, fmt.Errorf("the route %s is duplicate accross your packages", duplicate))
