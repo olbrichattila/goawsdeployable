@@ -22,6 +22,9 @@ services:
       - DEBUG=1
       - DATA_DIR=/tmp/localstack/data
       - DOCKER_HOST=unix:///var/run/docker.sock
+      - AWS_ACCESS_KEY_ID=your-access-key-id
+      - AWS_SECRET_ACCESS_KEY=your-secret-access-key
+      - AWS_DEFAULT_REGION=us-east-1
     volumes:
       # - "localstack_data:/tmp/localstack" # Use a named volume instead of a bind mount
       # - "./localstack:/tmp/localstack" # Ensure this volume path is correct

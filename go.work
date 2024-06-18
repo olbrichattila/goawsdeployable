@@ -4,6 +4,7 @@ use (
 	./selective_builder
 	./src/deployment_wrapper/http
 	./src/deployment_wrapper/lambda
+	./src/event_dispatcher/sqs
 	./src/packages
 	./src/packages/example
 	./src/packages/example2

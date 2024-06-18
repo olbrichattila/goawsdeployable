@@ -3,6 +3,7 @@ package http_listener
 import (
 	"context"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"strconv"
 )
@@ -49,8 +50,16 @@ func (l *listen) Start(handlers ...HandlerDef) error {
 
 func (l *listen) middleware(handler HandlerFunc) httpHandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+
+		body, err := ioutil.ReadAll(r.Body)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Error reading request body %s", err.Error()), http.StatusInternalServerError)
+			return
+
+		}
+
 		context := context.Background()
-		res, err := handler(context, "")
+		res, err := handler(context, string(body))
 		if err != nil {
 			http.Error(w, fmt.Sprintf("500 %s", err.Error()), http.StatusInternalServerError)
 			return
