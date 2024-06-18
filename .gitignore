@@ -2,3 +2,4 @@
 built
 prebuild_http
 prebuild_lambda
+selective_builder/selectivebuilder
