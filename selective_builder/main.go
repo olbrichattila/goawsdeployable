@@ -10,9 +10,13 @@ const (
 
 	deploymentWrapperSourceFolder = "../src/deployment_wrapper/"
 	deploymentWrapperBuildFolder  = "../prebuild_%s/deployment_wrapper/"
+	eventDispatcherSourceFolder   = "../src/event_dispatcher/"
+	eventDispatcherBuildFolder    = "../prebuild_%s/event_dispatcher/"
+	handlerSourceFolder           = "../src/handler/"
+	handlerBuildFolder            = "../prebuild_%s/handler/"
 
-	lambdaImport = "connector \"olbrichattila.co.uk/lambdawrapper\""
-	httpImport   = "connector \"olbrichattila.co.uk/httpwrapper\""
+	lambdaImport = "connector \"attilaolbrich.co.uk/lambdawrapper\""
+	httpImport   = "connector \"attilaolbrich.co.uk/httpwrapper\""
 	typeLambda   = "lambda"
 	typeHttp     = "http"
 )

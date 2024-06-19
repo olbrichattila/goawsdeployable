@@ -2,13 +2,22 @@ package lambda_listener
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 
-	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
+
+	"attilaolbrich.co.uk/handler"
 )
 
 func New() Listener {
-	return &listen{}
+	return &listen{
+		handler: handler.New(false),
+	}
+}
+
+type pathRequest struct {
+	Path string `json:"path"`
 }
 
 type Listener interface {
@@ -17,14 +26,15 @@ type Listener interface {
 }
 
 type listen struct {
+	handler handler.StructHandler
 }
 
 type HandlerDef struct {
 	Route   string
-	Handler HandlerFunc
+	Handler handler.StructHandlerFunc
 }
-type HandlerFunc = func(ctx context.Context, payload string) (string, error)
-type lambdaHandlerFunc = func(ctx context.Context, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error)
+
+type lambdaHandlerFunc = func(context.Context, json.RawMessage) (string, error)
 
 func (l *listen) Start(handlers ...HandlerDef) error {
 	lambda.Start(l.middleware(handlers...))
@@ -37,34 +47,28 @@ func (l *listen) Port(_ int) {
 }
 
 func (l *listen) middleware(handlers ...HandlerDef) lambdaHandlerFunc {
-	return func(ctx context.Context, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-		var res string
-		var err error
-		path := request.Path
-		if path == "" {
-			path = "/"
+	return func(ctx context.Context, rawEvent json.RawMessage) (string, error) {
+		rawMessage := string(rawEvent)
+		var path pathRequest
+		err := json.Unmarshal([]byte(rawMessage), &path)
+		if err != nil {
+			return "Error unmarshal to path request", err
 		}
 
-		// @TODO this can be expanded with many paraeters from APIGatewayProxyRequest, like HTTPMethod, headers, QueryStringParameters, PathParameters
-		for _, fcHandler := range handlers {
-			if path == fcHandler.Route {
-				res, err = fcHandler.Handler(ctx, request.Body)
-				if err != nil {
-					return events.APIGatewayProxyResponse{
-						StatusCode: 500,
-						Body:       err.Error(),
-					}, nil
-				}
+		requestPath := "/"
+		if path.Path != "" {
+			requestPath = path.Path
+		}
 
-				return events.APIGatewayProxyResponse{
-					StatusCode: 200,
-					Body:       res,
-				}, nil
+		for _, fcHandler := range handlers {
+			if fcHandler.Route == requestPath {
+				res, err := l.handler.Process(fcHandler.Handler, rawMessage)
+				if err != nil {
+					return "hanler returned error:", err
+				}
+				return res, nil
 			}
 		}
-		return events.APIGatewayProxyResponse{
-			StatusCode: 404,
-			Body:       "Route not found",
-		}, nil
+		return "route not found", fmt.Errorf("route not found")
 	}
 }

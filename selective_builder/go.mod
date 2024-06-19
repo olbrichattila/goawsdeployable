@@ -1,5 +1,5 @@
-module olbrichattila.co.uk/selectivebuilder
+module attilaolbrich.co.uk/selectivebuilder
 
-go 1.18
+go 1.22.4
 
 require gopkg.in/yaml.v2 v2.4.0

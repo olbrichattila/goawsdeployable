@@ -53,7 +53,18 @@ func (t *application) validate() error {
 func (t *application) build() error {
 	_ = rmDir("../prebuild")
 
+	// TODO: do them by slice, or separeate everithing into one source and dest folder
 	err := copyDir(deploymentWrapperSourceFolder, fmt.Sprintf(deploymentWrapperBuildFolder, t.buildType))
+	if err != nil {
+		return err
+	}
+
+	err = copyDir(eventDispatcherSourceFolder, fmt.Sprintf(eventDispatcherBuildFolder, t.buildType))
+	if err != nil {
+		return err
+	}
+
+	err = copyDir(handlerSourceFolder, fmt.Sprintf(handlerBuildFolder, t.buildType))
 	if err != nil {
 		return err
 	}
@@ -99,7 +110,7 @@ func (t *application) copyPackages(packages []Package) error {
 func (t *application) getImports(packages []Package, buildType string) string {
 	var builder strings.Builder
 	for _, packageInfo := range packages {
-		builder.WriteString(fmt.Sprintf("	\"olbrichattila.co.uk/%s\"\n", packageInfo.Name))
+		builder.WriteString(fmt.Sprintf("	\"attilaolbrich.co.uk/%s\"\n", packageInfo.Name))
 	}
 
 	if buildType == typeLambda {
@@ -113,7 +124,7 @@ func (t *application) getImports(packages []Package, buildType string) string {
 func (t *application) getModReplaces(packages []Package) string {
 	var builder strings.Builder
 	for _, packageInfo := range packages {
-		builder.WriteString(fmt.Sprintf("replace olbrichattila.co.uk/%s => ./%s\n\n", packageInfo.Name, packageInfo.Name))
+		builder.WriteString(fmt.Sprintf("replace attilaolbrich.co.uk/%s => ./%s\n\n", packageInfo.Name, packageInfo.Name))
 	}
 
 	return builder.String()

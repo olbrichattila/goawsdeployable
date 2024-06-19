@@ -25,7 +25,7 @@ fi
 
 cd prebuild_lambda
 # Initialize the module if not already done
-go mod init olbrichattila.co.uk || true
+go mod init attilaolbrich.co.uk || true
 
 go mod tidy
 

@@ -1,15 +1,18 @@
 package http_listener
 
 import (
-	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"strconv"
+
+	"attilaolbrich.co.uk/handler"
 )
 
 func New() Listener {
-	return &listen{}
+	return &listen{
+		handler: handler.New(false),
+	}
 }
 
 type Listener interface {
@@ -18,14 +21,15 @@ type Listener interface {
 }
 
 type listen struct {
-	port int
+	handler handler.StructHandler
+	port    int
 }
 
 type HandlerDef struct {
 	Route   string
-	Handler HandlerFunc
+	Handler handler.StructHandlerFunc
 }
-type HandlerFunc = func(ctx context.Context, payload string) (string, error)
+
 type httpHandlerFunc = func(w http.ResponseWriter, r *http.Request)
 
 func (l *listen) Port(port int) {
@@ -48,23 +52,21 @@ func (l *listen) Start(handlers ...HandlerDef) error {
 	return nil
 }
 
-func (l *listen) middleware(handler HandlerFunc) httpHandlerFunc {
+func (l *listen) middleware(structHandlerFunc handler.StructHandlerFunc) httpHandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		body, err := ioutil.ReadAll(r.Body)
+		body, err := io.ReadAll(r.Body)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Error reading request body %s", err.Error()), http.StatusInternalServerError)
 			return
-
 		}
 
-		context := context.Background()
-		res, err := handler(context, string(body))
+		response, err := l.handler.Process(structHandlerFunc, string(body))
 		if err != nil {
-			http.Error(w, fmt.Sprintf("500 %s", err.Error()), http.StatusInternalServerError)
+			http.Error(w, fmt.Sprintf("Error parsing handler func %s", err.Error()), http.StatusInternalServerError)
 			return
 		}
 
-		w.Write([]byte(res))
+		w.Write([]byte(response))
 	}
 }

@@ -3,11 +3,11 @@ package main
 import (
 	"fmt"
 
-	// connector "olbrichattila.co.uk/lambdawrapper"
+	// connector "attilaolbrich.co.uk/lambdawrapper"
 
-	"olbrichattila.co.uk/example"
-	"olbrichattila.co.uk/example2"
-	connector "olbrichattila.co.uk/httpwrapper"
+	"attilaolbrich.co.uk/example"
+	"attilaolbrich.co.uk/example2"
+	connector "attilaolbrich.co.uk/httpwrapper"
 )
 
 func main() {

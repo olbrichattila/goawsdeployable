@@ -4,20 +4,26 @@ import (
 	"context"
 	"fmt"
 
-	dispather "olbrichattila.co.uk/sqs_event_dispatcher"
+	dispather "attilaolbrich.co.uk/sqs_event_dispatcher"
 )
 
-type Event struct {
+type Request struct {
 	Name string `json:"name"`
 }
 
-func TestHandler(_ context.Context, payload string) (string, error) {
-	fmt.Println(payload)
-	str, err := dispather.NewDispatcher().Send(Event{Name: payload})
+type Response struct {
+	ResponseName string `json:"respopnseName"`
+}
+
+func TestHandler(_ *context.Context, request *Request) (*Response, error) {
+	fmt.Println(request)
+	str, err := dispather.NewDispatcher().Send(*request)
 	if err != nil {
 		fmt.Println(err)
 	}
 	fmt.Println(str)
 
-	return fmt.Sprintf("{\"RES\": \"It works%s\"}", fmt.Sprint(payload)), nil
+	return &Response{
+		ResponseName: "It is the response",
+	}, nil
 }

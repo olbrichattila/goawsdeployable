@@ -1,6 +1,6 @@
-module olbrichattila.co.uk/sqs_event_dispatcher
+module attilaolbrich.co.uk/sqs_event_dispatcher
 
-go 1.18
+go 1.22.4
 
 require github.com/aws/aws-sdk-go v1.54.4
 
