@@ -1,0 +1,14 @@
+go 1.22.4
+
+use (
+	.
+	./deploymentwrapper/http
+	./deploymentwrapper/lambda
+	./eventdispatcher/sqs
+	./handler
+	./packages/example
+	./packages/example2
+	./routebuilder
+)
+
+
