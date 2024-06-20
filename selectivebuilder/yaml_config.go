@@ -18,15 +18,17 @@ func newYamlConfig() *ymlData {
 type ymlData struct {
 }
 
-type Function struct {
+type function struct {
 	Route string `yaml:"route"`
 }
 
+// Package is the structure from yaml package
 type Package struct {
 	Name      string     `yaml:"name"`
-	Functions []Function `yaml:"functions"`
+	Functions []function `yaml:"functions"`
 }
 
+// Config is the structure from yaml package
 type Config struct {
 	Port   int `yaml:"port"`
 	Lambda struct {

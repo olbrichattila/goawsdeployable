@@ -1,4 +1,5 @@
-package sq_event_dispatcher
+// Package sqseventdispatcher puths an item from a struct to the AWS SQS queue
+package sqseventdispatcher
 
 import (
 	"encoding/json"
@@ -10,7 +11,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/sqs"
 )
 
-// Interface Dispatch event with Send(<your stryct>) error
+// Dispatcher event with Send(<your stryct>) error
 type Dispatcher interface {
 	Send(any) (string, error)
 }
@@ -18,6 +19,7 @@ type Dispatcher interface {
 type dispatch struct {
 }
 
+// NewDispatcher creates a new dispatcher struct
 func NewDispatcher() Dispatcher {
 	return &dispatch{}
 }

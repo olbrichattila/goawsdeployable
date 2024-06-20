@@ -55,8 +55,8 @@ selective_builder lambda
 ```
 
 Each of them will create a source code specific to your environment:
-- prebuild_http
-- prebuild_lambda
+- prebuildhttp
+- prebuildlambda
 
 You can deploy your lambda function via:
 ```
@@ -74,6 +74,7 @@ The selective builder will verify if you missing any handler, incorectly specify
 
 ### Example:
 ```
+// Package example is an example of a shared module handler
 package example2
 
 import (
@@ -84,6 +85,7 @@ type Request struct {
 	Name string `json:"name"`
 }
 
+// TestHandler is the unfied entry point of the module
 func TestHandler(_ *context.Context, request *Request) (*Request, error) {
 	return request, nil
 }
@@ -91,13 +93,14 @@ func TestHandler(_ *context.Context, request *Request) (*Request, error) {
 
 ### example with event dispatcher
 ```
+// Package example is an example of a shared module handler
 package example
 
 import (
 	"context"
 	"fmt"
 
-	dispather "attilaolbrich.co.uk/sqs_event_dispatcher"
+	dispather "attilaolbrich.co.uk/sqs_eventdispatcher"
 )
 
 type Request struct {
@@ -108,6 +111,7 @@ type Response struct {
 	ResponseName string `json:"respopnseName"`
 }
 
+// TestHandler is the unfied entry point of the module
 func TestHandler(_ *context.Context, request *Request) (*Response, error) {
 
 	fmt.Println(request)
@@ -134,6 +138,7 @@ and it will only list the proper handler definitions you privoded in the yaml fi
 
 Only the used modules listed in your yaml will be copied to the prebuild folder(s)
 ```
+// Package main is the main entry point
 package main
 
 import (

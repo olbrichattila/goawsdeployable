@@ -2,7 +2,7 @@
 // where any can only be a struct pointer
 // Example:
 //
-//	  func testHandler(ctx *context.Context, par2 *request) (*response, error) {
+//	  func TestHandler(ctx *context.Context, par2 *Request) (*Response, error) {
 //		   return &response{Responsed: "OK response"}, nil
 //	  }
 //
@@ -31,7 +31,7 @@ func New(validateJSONTags bool) StructHandler {
 }
 
 // StructHandlerFunc is an interface which will be validated to
-// func testHandler(*context.Context, any) (any, error)
+// func TestHandler(*context.Context, any) (any, error)
 // where any can be a struct only
 type StructHandlerFunc interface{}
 

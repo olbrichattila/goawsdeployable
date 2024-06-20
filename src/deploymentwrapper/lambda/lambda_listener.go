@@ -1,4 +1,5 @@
-package lambda_listener
+// Package lambdalistener is a wrapper around AWS lambda to unify it with regular HTTP server
+package lambdalistener
 
 import (
 	"context"
@@ -10,6 +11,7 @@ import (
 	"attilaolbrich.co.uk/handler"
 )
 
+// New creates the new listener
 func New() Listener {
 	return &listen{
 		handler: handler.New(false),
@@ -20,6 +22,7 @@ type pathRequest struct {
 	Path string `json:"path"`
 }
 
+// Listener is the interface to make Lambda and HTTP unified
 type Listener interface {
 	Start(handlers ...HandlerDef) error
 	Port(int)
@@ -29,6 +32,7 @@ type listen struct {
 	handler handler.StructHandler
 }
 
+// HandlerDef is the structure how to pass a route and a handler
 type HandlerDef struct {
 	Route   string
 	Handler handler.StructHandlerFunc
@@ -47,7 +51,7 @@ func (l *listen) Port(_ int) {
 }
 
 func (l *listen) middleware(handlers ...HandlerDef) lambdaHandlerFunc {
-	return func(ctx context.Context, rawEvent json.RawMessage) (string, error) {
+	return func(_ context.Context, rawEvent json.RawMessage) (string, error) {
 		rawMessage := string(rawEvent)
 		var path pathRequest
 		err := json.Unmarshal([]byte(rawMessage), &path)

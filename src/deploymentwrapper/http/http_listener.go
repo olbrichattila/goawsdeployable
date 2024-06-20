@@ -1,4 +1,5 @@
-package http_listener
+// Package httplistener is a wrapper around http server to unify it with lambda
+package httplistener
 
 import (
 	"fmt"
@@ -9,12 +10,14 @@ import (
 	"attilaolbrich.co.uk/handler"
 )
 
+// New creates a new listener
 func New() Listener {
 	return &listen{
 		handler: handler.New(false),
 	}
 }
 
+// Listener is the interface to make Lambda and HTTP unified
 type Listener interface {
 	Start(handlers ...HandlerDef) error
 	Port(int)
@@ -25,6 +28,7 @@ type listen struct {
 	port    int
 }
 
+// HandlerDef is the structure how to pass a route and a handler
 type HandlerDef struct {
 	Route   string
 	Handler handler.StructHandlerFunc

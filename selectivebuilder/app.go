@@ -191,7 +191,7 @@ func (t *application) arg() (string, error) {
 	}
 
 	arg := strings.ToLower(args[1])
-	if arg == typeLambda || arg == typeHttp {
+	if arg == typeLambda || arg == typeHTTP {
 		return arg, nil
 	}
 

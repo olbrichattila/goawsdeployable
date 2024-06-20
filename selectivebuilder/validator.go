@@ -84,7 +84,7 @@ func (t *buildValidator) validatePackage(buildPackage Package) []error {
 				return []error{err}
 			}
 
-			err = t.valudateFunctions(f.path, functionLookups, content)
+			err = t.valudateFunctions(functionLookups, content)
 			if err != nil {
 				return []error{err}
 			}
@@ -94,10 +94,10 @@ func (t *buildValidator) validatePackage(buildPackage Package) []error {
 	return t.getCombinerErrors(functionLookups, routePaths)
 }
 
-func (t *buildValidator) valudateFunctions(path string, functionLookups []*funcLookupResult, content string) error {
+func (t *buildValidator) valudateFunctions(functionLookups []*funcLookupResult, content string) error {
 	for _, funcLookup := range functionLookups {
 		if !funcLookup.found {
-			match, err := t.validateFunctionsExistsInGoFile(path, funcLookup.name, content)
+			match, err := t.validateFunctionsExistsInGoFile(funcLookup.name, content)
 			if err != nil {
 				return err
 			}
@@ -146,7 +146,7 @@ func (t *buildValidator) loadFile(sourceFile string) (string, error) {
 	return string(content), nil
 }
 
-func (t *buildValidator) validateFunctionsExistsInGoFile(sourceFile, funcname, content string) (bool, error) {
+func (t *buildValidator) validateFunctionsExistsInGoFile(funcname, content string) (bool, error) {
 	escapedStr := regexp.QuoteMeta(funcname)
 	match, err := regexp.MatchString(fmt.Sprintf("func.*%s", escapedStr), string(content))
 	if err != nil {

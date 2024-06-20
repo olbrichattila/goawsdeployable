@@ -23,7 +23,7 @@ else
     echo "File '$file' does not exist."
 fi
 
-cd prebuild_lambda
+cd prebuildlambda
 # Initialize the module if not already done
 go mod init attilaolbrich.co.uk || true
 

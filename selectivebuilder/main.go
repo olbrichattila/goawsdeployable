@@ -1,3 +1,4 @@
+// Package main is the entry point of the command line utility
 package main
 
 import (
@@ -6,19 +7,19 @@ import (
 
 const (
 	sourceFolder = "../src/packages/"
-	buildFolder  = "../prebuild_%s/"
+	buildFolder  = "../prebuild%s/"
 
-	deploymentWrapperSourceFolder = "../src/deployment_wrapper/"
-	deploymentWrapperBuildFolder  = "../prebuild_%s/deployment_wrapper/"
-	eventDispatcherSourceFolder   = "../src/event_dispatcher/"
-	eventDispatcherBuildFolder    = "../prebuild_%s/event_dispatcher/"
+	deploymentWrapperSourceFolder = "../src/deploymentwrapper/"
+	deploymentWrapperBuildFolder  = "../prebuild%s/deploymentwrapper/"
+	eventDispatcherSourceFolder   = "../src/eventdispatcher/"
+	eventDispatcherBuildFolder    = "../prebuild%s/eventdispatcher/"
 	handlerSourceFolder           = "../src/handler/"
-	handlerBuildFolder            = "../prebuild_%s/handler/"
+	handlerBuildFolder            = "../prebuild%s/handler/"
 
 	lambdaImport = "connector \"attilaolbrich.co.uk/lambdawrapper\""
 	httpImport   = "connector \"attilaolbrich.co.uk/httpwrapper\""
 	typeLambda   = "lambda"
-	typeHttp     = "http"
+	typeHTTP     = "http"
 )
 
 // Add bash script to build, alternatively go mod tidy all subfolders and deployment wrapppers and so
