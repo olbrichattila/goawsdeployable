@@ -1,4 +1,4 @@
-module attilaolbrich.co.uk/lambdawrapper
+module olbrichattila.co.uk/deploymentwrapper/lambda
 
 go 1.22.4
 

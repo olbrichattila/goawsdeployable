@@ -6,9 +6,9 @@ import (
 
 	// connector "attilaolbrich.co.uk/lambdawrapper"
 
+	connector "attilaolbrich.co.uk/deploymentwrapper/http"
 	"attilaolbrich.co.uk/example"
 	"attilaolbrich.co.uk/example2"
-	connector "attilaolbrich.co.uk/httpwrapper"
 )
 
 func main() {

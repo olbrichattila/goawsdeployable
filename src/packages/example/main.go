@@ -5,7 +5,7 @@ import (
 	"context"
 	"fmt"
 
-	dispather "attilaolbrich.co.uk/sqs_eventdispatcher"
+	dispather "attilaolbrich.co.uk/eventdispatcher/sqs"
 )
 
 // Request data automaticall marhalled here

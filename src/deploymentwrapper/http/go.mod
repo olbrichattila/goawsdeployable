@@ -1,4 +1,4 @@
-module attilaolbrich.co.uk/httpwrapper
+module attilaolbrich.co.uk/deploymentwrapper/http
 
 go 1.22.4
 
