@@ -4,11 +4,11 @@ package main
 import (
 	"fmt"
 
-	// connector "attilaolbrich.co.uk/lambdawrapper"
+	// connector "lambdalistener"
 
-	connector "attilaolbrich.co.uk/deploymentwrapper/http"
-	"attilaolbrich.co.uk/example"
-	"attilaolbrich.co.uk/example2"
+	"example"
+	"example2"
+	connector "httplistener"
 )
 
 func main() {

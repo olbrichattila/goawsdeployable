@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"strconv"
 	"strings"
@@ -51,30 +50,8 @@ func (t *application) validate() error {
 }
 
 func (t *application) build() error {
-	_ = rmDir("../prebuild")
 
-	// TODO: do them by slice, or separeate everithing into one source and dest folder
-	err := copyDir(deploymentWrapperSourceFolder, fmt.Sprintf(deploymentWrapperBuildFolder, t.buildType))
-	if err != nil {
-		return err
-	}
-
-	err = copyDir(eventDispatcherSourceFolder, fmt.Sprintf(eventDispatcherBuildFolder, t.buildType))
-	if err != nil {
-		return err
-	}
-
-	err = copyDir(handlerSourceFolder, fmt.Sprintf(handlerBuildFolder, t.buildType))
-	if err != nil {
-		return err
-	}
-
-	err = t.copyPackages(t.buildPackages)
-	if err != nil {
-		return err
-	}
-
-	err = t.createMainFile(
+	err := t.createMainFile(
 		t.getImports(t.buildPackages, t.buildType),
 		t.getHandlers(t.buildPackages),
 		t.config.Port,
@@ -83,34 +60,13 @@ func (t *application) build() error {
 		return err
 	}
 
-	err = t.createTemplateFile(
-		t.getModReplaces(t.buildPackages),
-	)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (t *application) copyPackages(packages []Package) error {
-	for _, packageInfo := range packages {
-		sourceFile := sourceFolder + packageInfo.Name
-		destinationFile := fmt.Sprintf(buildFolder, t.buildType) + packageInfo.Name
-		fmt.Printf(" -copy %s -> %s \n", sourceFile, destinationFile)
-		err := copyDir(sourceFile, destinationFile)
-		if err != nil {
-			return err
-		}
-	}
-
 	return nil
 }
 
 func (t *application) getImports(packages []Package, buildType string) string {
 	var builder strings.Builder
 	for _, packageInfo := range packages {
-		builder.WriteString(fmt.Sprintf("	\"attilaolbrich.co.uk/%s\"\n", packageInfo.Name))
+		builder.WriteString(fmt.Sprintf("	\"%s\"\n", packageInfo.Name))
 	}
 
 	if buildType == typeLambda {
@@ -118,15 +74,6 @@ func (t *application) getImports(packages []Package, buildType string) string {
 	} else {
 		builder.WriteString(fmt.Sprintf("	%s", httpImport))
 	}
-	return builder.String()
-}
-
-func (t *application) getModReplaces(packages []Package) string {
-	var builder strings.Builder
-	for _, packageInfo := range packages {
-		builder.WriteString(fmt.Sprintf("replace attilaolbrich.co.uk/%s => ./%s\n\n", packageInfo.Name, packageInfo.Name))
-	}
-
 	return builder.String()
 }
 
@@ -154,16 +101,8 @@ func (t *application) createMainFile(imports, handlers string, port int) error {
 	return t.replaceInFile("template.tmpl", fmt.Sprintf(buildFolder+"main.go", t.buildType), replacements)
 }
 
-func (t *application) createTemplateFile(repacements string) error {
-	replacements := map[string]string{
-		"<--replacements->": repacements,
-	}
-
-	return t.replaceInFile("mod-template.tmpl", fmt.Sprintf(buildFolder+"go.mod", t.buildType), replacements)
-}
-
 func (t *application) replaceInFile(sourceFile, targetFile string, replacements map[string]string) error {
-	content, err := ioutil.ReadFile(sourceFile)
+	content, err := os.ReadFile(sourceFile)
 	if err != nil {
 		return err
 	}
@@ -174,7 +113,7 @@ func (t *application) replaceInFile(sourceFile, targetFile string, replacements 
 		newContent = strings.ReplaceAll(newContent, rFrom, rTo)
 	}
 
-	err = ioutil.WriteFile(targetFile, []byte(newContent), 0644)
+	err = os.WriteFile(targetFile, []byte(newContent), 0644)
 	if err != nil {
 		return err
 	}

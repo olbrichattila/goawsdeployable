@@ -1,4 +1,4 @@
-module attilaolbrich.co.uk/selectivebuilder
+module selectivebuilder
 
 go 1.22.4
 

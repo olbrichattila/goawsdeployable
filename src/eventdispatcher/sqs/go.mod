@@ -1,4 +1,4 @@
-module attilaolbrich.co.uk/eventdispatcher/sqs
+module sqseventdispatcher
 
 go 1.22.4
 

@@ -23,10 +23,13 @@ else
     echo "File '$file' does not exist."
 fi
 
-cd prebuildlambda
-# Initialize the module if not already done
-go mod init attilaolbrich.co.uk || true
+cd ./selectivebuilder
+go run . lambda
 
+
+cd ../src/built/lambda
+# Initialize the module if not already done
+go mod init prebuildlambda || true
 go mod tidy
 
 if [ -f ./main ]; then
@@ -42,4 +45,4 @@ GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o main main.go
 
 chmod +x main
 # Package the executable into a zip file
-zip ../built/lambda/function.zip main
+zip ../../../built/lambda/function.zip main

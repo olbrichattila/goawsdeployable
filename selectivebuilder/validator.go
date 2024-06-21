@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -138,7 +137,7 @@ func (t *buildValidator) duplicateErrors(routePaths []string) []error {
 }
 
 func (t *buildValidator) loadFile(sourceFile string) (string, error) {
-	content, err := ioutil.ReadFile(sourceFile)
+	content, err := os.ReadFile(sourceFile)
 	if err != nil {
 		return "", err
 	}

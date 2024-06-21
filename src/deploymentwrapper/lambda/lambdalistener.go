@@ -8,7 +8,7 @@ import (
 
 	"github.com/aws/aws-lambda-go/lambda"
 
-	"attilaolbrich.co.uk/handler"
+	"handler"
 )
 
 // New creates the new listener

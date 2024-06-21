@@ -7,17 +7,10 @@ import (
 
 const (
 	sourceFolder = "../src/packages/"
-	buildFolder  = "../prebuild%s/"
+	buildFolder  = "../src/built/%s/"
 
-	deploymentWrapperSourceFolder = "../src/deploymentwrapper/"
-	deploymentWrapperBuildFolder  = "../prebuild%s/deploymentwrapper/"
-	eventDispatcherSourceFolder   = "../src/eventdispatcher/"
-	eventDispatcherBuildFolder    = "../prebuild%s/eventdispatcher/"
-	handlerSourceFolder           = "../src/handler/"
-	handlerBuildFolder            = "../prebuild%s/handler/"
-
-	lambdaImport = "connector \"attilaolbrich.co.uk/lambdawrapper\""
-	httpImport   = "connector \"attilaolbrich.co.uk/httpwrapper\""
+	lambdaImport = "connector \"lambdalistener\""
+	httpImport   = "connector \"httplistener\""
 	typeLambda   = "lambda"
 	typeHTTP     = "http"
 )
@@ -48,8 +41,5 @@ func main() {
 		return
 	}
 
-	fmt.Printf(
-		"Done, built into %s\n",
-		fmt.Sprintf(buildFolder, app.buildType),
-	)
+	fmt.Println("Done.")
 }

@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"attilaolbrich.co.uk/handler"
+	"handler"
 )
 
 // New creates a new listener

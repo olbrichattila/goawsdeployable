@@ -1,8 +1,8 @@
 package main
 
 import (
-	"io/ioutil"
 	"log"
+	"os"
 
 	"gopkg.in/yaml.v2"
 )
@@ -40,7 +40,7 @@ type Config struct {
 }
 
 func (*ymlData) pharse() (Config, error) {
-	data, err := ioutil.ReadFile(configYmlFileName)
+	data, err := os.ReadFile(configYmlFileName)
 	if err != nil {
 		log.Fatalf("error: %v", err)
 	}
