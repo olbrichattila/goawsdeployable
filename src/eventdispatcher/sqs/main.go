@@ -48,7 +48,8 @@ func (t dispatch) Send(v any) (string, error) {
 func (t dispatch) sendToSqs(messageBody string) error {
 	// Load the Shared AWS Configuration (~/.aws/config) //TODO: do it a different way
 	// TODO get full config from file, not default
-	endpoint := "http://localhost:4566"
+	// endpoint := "http://localhost:4566"
+	endpoint := "http://localstack:4566"
 	sess := session.Must(session.NewSessionWithOptions(session.Options{
 		Config: aws.Config{
 			Region:   aws.String("us-east-1"),
@@ -57,7 +58,8 @@ func (t dispatch) sendToSqs(messageBody string) error {
 		Profile: "default",
 	}))
 
-	queueURL := "http://localhost:4566/000000000000/test"
+	// queueURL := "http://localhost:4566/000000000000/test"
+	queueURL := "http://localstack:4566/000000000000/test"
 	svc := sqs.New(sess)
 
 	_, err := svc.SendMessage(&sqs.SendMessageInput{

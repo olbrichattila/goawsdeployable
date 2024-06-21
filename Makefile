@@ -5,6 +5,8 @@ deploy-lambda:
 	./redeploy-lambda.sh
 run-lambda:
 	 ./docker/test-lambda-function.sh
+run-http:
+	./run-http.sh
 lint:
 	gocritic check ./...
 	revive ./...
