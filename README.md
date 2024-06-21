@@ -54,10 +54,6 @@ selective_builder lambda
 
 ```
 
-Each of them will create a source code specific to your environment:
-- prebuildhttp
-- prebuildlambda
-
 You can deploy your lambda function via:
 ```
 make build-deploy-lambda
@@ -74,13 +70,14 @@ The selective builder will verify if you missing any handler, incorectly specify
 
 ### Example:
 ```
-// Package example is an example of a shared module handler
+// Package example2 is just an example how to create a module accross AWS lambda or HTTP with the same code
 package example2
 
 import (
 	"context"
 )
 
+// The Request automatically marshalled here
 type Request struct {
 	Name string `json:"name"`
 }
@@ -89,33 +86,34 @@ type Request struct {
 func TestHandler(_ *context.Context, request *Request) (*Request, error) {
 	return request, nil
 }
+
 ```
 
 ### example with event dispatcher
 ```
-// Package example is an example of a shared module handler
+// Package example is just an example how to create a module accross AWS lambda or HTTP with the same code
 package example
 
 import (
 	"context"
 	"fmt"
 
-	dispather "attilaolbrich.co.uk/sqs_eventdispatcher"
+	dispather "sqseventdispatcher"
 )
 
+// Request data automaticall marhalled here
 type Request struct {
 	Name string `json:"name"`
 }
 
+// Response what we want to be returned as HTTP or Lambda
 type Response struct {
 	ResponseName string `json:"respopnseName"`
 }
 
 // TestHandler is the unfied entry point of the module
 func TestHandler(_ *context.Context, request *Request) (*Response, error) {
-
 	fmt.Println(request)
-
 	str, err := dispather.NewDispatcher().Send(*request)
 	if err != nil {
 		fmt.Println(err)
@@ -138,17 +136,14 @@ and it will only list the proper handler definitions you privoded in the yaml fi
 
 Only the used modules listed in your yaml will be copied to the prebuild folder(s)
 ```
-// Package main is the main entry point
+// Package main is the entry point
 package main
 
 import (
 	"fmt"
-
-	// connector "attilaolbrich.co.uk/lambdawrapper"
-
-	"attilaolbrich.co.uk/example"
-	"attilaolbrich.co.uk/example2"
-	connector "attilaolbrich.co.uk/httpwrapper"
+	"example"
+	"example2"
+	connector "httplistener"
 )
 
 func main() {
@@ -157,12 +152,14 @@ func main() {
 	err := listener.Start(
 		connector.HandlerDef{Route: "/", Handler: example.TestHandler},
 		connector.HandlerDef{Route: "/add", Handler: example2.TestHandler},
-	)
+		connector.HandlerDef{Route: "/route2", Handler: example2.TestHandler},
+    )
 
 	if err != nil {
 		fmt.Println(err)
 	}
 }
+
 ```
 
 ### Test your SQS que visually:
