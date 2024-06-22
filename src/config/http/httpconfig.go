@@ -24,10 +24,10 @@ type config struct {
 // GetSQSConfig implements sharedconfig.SharedConfiger.
 func (c *config) GetSQSConfig() *sharedconfig.SQSConfig {
 	return &sharedconfig.SQSConfig{
-		QueueURL: "http://localhost:4566/000000000000/test",
+		QueueURL: "http://localstack:4566/000000000000/test",
 		AWSConfig: aws.Config{
 			Region:   aws.String("us-east-1"),
-			Endpoint: aws.String("http://localhost:4566"),
+			Endpoint: aws.String("http://localstack:4566"),
 			Credentials: credentials.NewStaticCredentials(
 				"your-access-key-id",     // Replace with your actual AWS Access Key ID
 				"your-secret-access-key", // Replace with your actual AWS Secret Access Key

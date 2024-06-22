@@ -16,6 +16,7 @@ type Request struct {
 type Response struct {
 	ConfigType  string `json:"configType"`
 	RequestName string `json:"requestName"`
+	Message     string `json:"Message"`
 }
 
 // TestHandler is the unfied entry point of the module

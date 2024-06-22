@@ -1,1 +1,1 @@
-{"errorMessage":"AWS.SimpleQueueService.NonExistentQueue: The specified queue does not exist.","errorType":"QueueDoesNotExist"}
+"{\"respopnseName\":\"hello from lambda\",\"configType\":\"lambda\"}"
