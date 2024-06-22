@@ -1,3 +1,5 @@
+aws-list-functions:
+	aws --endpoint-url=http://localhost:4566 lambda list-functions --query 'Functions[*].FunctionArn' --output text
 build-deploy-lambda: build-lambda deploy-lambda
 build-lambda:
 	./build-lambda.sh
