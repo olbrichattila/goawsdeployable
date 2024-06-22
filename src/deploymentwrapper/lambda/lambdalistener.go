@@ -3,8 +3,10 @@ package lambdalistener
 
 import (
 	"context"
+	"deploymentwrapper"
 	"encoding/json"
 	"fmt"
+	"sharedconfig"
 
 	"github.com/aws/aws-lambda-go/lambda"
 
@@ -12,7 +14,7 @@ import (
 )
 
 // New creates the new listener
-func New() Listener {
+func New() deploymentwrapper.Listener {
 	return &listen{
 		handler: handler.New(false),
 	}
@@ -22,25 +24,14 @@ type pathRequest struct {
 	Path string `json:"path"`
 }
 
-// Listener is the interface to make Lambda and HTTP unified
-type Listener interface {
-	Start(handlers ...HandlerDef) error
-	Port(int)
-}
-
 type listen struct {
 	handler handler.StructHandler
-}
-
-// HandlerDef is the structure how to pass a route and a handler
-type HandlerDef struct {
-	Route   string
-	Handler handler.StructHandlerFunc
+	config  sharedconfig.SharedConfiger
 }
 
 type lambdaHandlerFunc = func(context.Context, json.RawMessage) (string, error)
 
-func (l *listen) Start(handlers ...HandlerDef) error {
+func (l *listen) Start(handlers ...deploymentwrapper.HandlerDef) error {
 	lambda.Start(l.middleware(handlers...))
 
 	return nil
@@ -50,7 +41,11 @@ func (l *listen) Port(_ int) {
 	// this function is not requred for Lambda
 }
 
-func (l *listen) middleware(handlers ...HandlerDef) lambdaHandlerFunc {
+func (l *listen) Config(config sharedconfig.SharedConfiger) {
+	l.config = config
+}
+
+func (l *listen) middleware(handlers ...deploymentwrapper.HandlerDef) lambdaHandlerFunc {
 	return func(_ context.Context, rawEvent json.RawMessage) (string, error) {
 		rawMessage := string(rawEvent)
 		var path pathRequest
@@ -66,7 +61,7 @@ func (l *listen) middleware(handlers ...HandlerDef) lambdaHandlerFunc {
 
 		for _, fcHandler := range handlers {
 			if fcHandler.Route == requestPath {
-				res, err := l.handler.Process(fcHandler.Handler, rawMessage)
+				res, err := l.handler.Process(l.config, fcHandler.Handler, rawMessage)
 				if err != nil {
 					return "hanler returned error:", err
 				}

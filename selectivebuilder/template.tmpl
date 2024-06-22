@@ -3,11 +3,13 @@ package main
 
 import (
 	"fmt"
+	"deploymentwrapper"
 <--imports-->
 )
 
 func main() {
 	listener := connector.New()
+	listener.Config(config.New())
 	listener.Port(<--port-->)
 	err := listener.Start(
 <--handlers-->    )

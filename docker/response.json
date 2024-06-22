@@ -1,1 +1,1 @@
-"{\"respopnseName\":\"It is the response\"}"
+{"errorMessage":"AWS.SimpleQueueService.NonExistentQueue: The specified queue does not exist.","errorType":"QueueDoesNotExist"}

@@ -2,7 +2,9 @@
 package main
 
 import (
+	"deploymentwrapper"
 	"fmt"
+	"httpconfig"
 
 	// connector "lambdalistener"
 
@@ -13,10 +15,11 @@ import (
 
 func main() {
 	listener := connector.New()
+	listener.Config(httpconfig.New())
 	listener.Port(8080)
 	err := listener.Start(
-		connector.HandlerDef{Route: "/", Handler: example.TestHandler},
-		connector.HandlerDef{Route: "/add", Handler: example2.TestHandler},
+		deploymentwrapper.HandlerDef{Route: "/", Handler: example.TestHandler},
+		deploymentwrapper.HandlerDef{Route: "/add", Handler: example2.TestHandler},
 	)
 
 	if err != nil {

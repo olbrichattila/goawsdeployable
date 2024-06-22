@@ -1,1 +1,1 @@
-"{\"respopnseName\":\"It is the response\"}"
+"{\"dispatherResult\":\"{\\\"name\\\":\\\"hello from lambda\\\"}\",\"respopnseName\":\"hello from lambda\",\"configType\":\"lambda\"}"

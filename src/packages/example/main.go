@@ -3,7 +3,7 @@ package example
 
 import (
 	"context"
-	"fmt"
+	"sharedconfig"
 
 	dispather "sqseventdispatcher"
 )
@@ -15,19 +15,21 @@ type Request struct {
 
 // Response what we want to be returned as HTTP or Lambda
 type Response struct {
-	ResponseName string `json:"respopnseName"`
+	DispactherResult string `json:"dispatherResult"`
+	ResponseName     string `json:"respopnseName"`
+	ConfigType       string `json:"configType"`
 }
 
 // TestHandler is the unfied entry point of the module
-func TestHandler(_ *context.Context, request *Request) (*Response, error) {
-	fmt.Println(request)
-	str, err := dispather.NewDispatcher().Send(*request)
+func TestHandler(_ *context.Context, config sharedconfig.SharedConfiger, request *Request) (*Response, error) {
+	dispatcherResult, err := dispather.NewDispatcher().Send(*request)
 	if err != nil {
-		fmt.Println(err)
+		return nil, err
 	}
-	fmt.Println(str)
 
 	return &Response{
-		ResponseName: "It is the response",
+		ResponseName:     request.Name,
+		DispactherResult: dispatcherResult,
+		ConfigType:       config.GetConfigType(),
 	}, nil
 }

@@ -75,6 +75,8 @@ package example2
 
 import (
 	"context"
+	"fmt"
+	"sharedconfig"
 )
 
 // The Request automatically marshalled here
@@ -82,11 +84,21 @@ type Request struct {
 	Name string `json:"name"`
 }
 
-// TestHandler is the unfied entry point of the module
-func TestHandler(_ *context.Context, request *Request) (*Request, error) {
-	return request, nil
+// The response, which is unmarshalled automatically and returned in http or lambda response
+type Response struct {
+	ConfigType  string `json:"configType"`
+	RequestName string `json:"requestName"`
 }
 
+// TestHandler is the unfied entry point of the module
+func TestHandler(_ *context.Context, config sharedconfig.SharedConfiger, request *Request) (*Response, error) {
+	fmt.Println()
+
+	return &Response{
+		ConfigType:  config.GetConfigType(),
+		RequestName: request.Name,
+	}, nil
+}
 ```
 
 ### example with event dispatcher
@@ -96,7 +108,7 @@ package example
 
 import (
 	"context"
-	"fmt"
+	"sharedconfig"
 
 	dispather "sqseventdispatcher"
 )
@@ -108,23 +120,24 @@ type Request struct {
 
 // Response what we want to be returned as HTTP or Lambda
 type Response struct {
-	ResponseName string `json:"respopnseName"`
+	DispactherResult string `json:"dispatherResult"`
+	ResponseName     string `json:"respopnseName"`
+	ConfigType       string `json:"configType"`
 }
 
 // TestHandler is the unfied entry point of the module
-func TestHandler(_ *context.Context, request *Request) (*Response, error) {
-	fmt.Println(request)
-	str, err := dispather.NewDispatcher().Send(*request)
+func TestHandler(_ *context.Context, config sharedconfig.SharedConfiger, request *Request) (*Response, error) {
+	dispatcherResult, err := dispather.NewDispatcher().Send(*request)
 	if err != nil {
-		fmt.Println(err)
+		return nil, err
 	}
-	fmt.Println(str)
 
 	return &Response{
-		ResponseName: "It is the response",
+		ResponseName:     request.Name,
+		DispactherResult: dispatcherResult,
+		ConfigType:       config.GetConfigType(),
 	}, nil
 }
-
 ```
 
 ### The package main function looks like:
@@ -141,18 +154,21 @@ package main
 
 import (
 	"fmt"
+	"deploymentwrapper"
 	"example"
 	"example2"
 	connector "httplistener"
+	config "httpconfig"
 )
 
 func main() {
 	listener := connector.New()
+	listener.Config(config.New())
 	listener.Port(8080)
 	err := listener.Start(
-		connector.HandlerDef{Route: "/", Handler: example.TestHandler},
-		connector.HandlerDef{Route: "/add", Handler: example2.TestHandler},
-		connector.HandlerDef{Route: "/route2", Handler: example2.TestHandler},
+		deploymentwrapper.HandlerDef{Route: "/", Handler: example.TestHandler},
+		deploymentwrapper.HandlerDef{Route: "/add", Handler: example2.TestHandler},
+		deploymentwrapper.HandlerDef{Route: "/route2", Handler: example2.TestHandler},
     )
 
 	if err != nil {

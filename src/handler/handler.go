@@ -14,13 +14,14 @@ import (
 	"encoding/json"
 	"fmt"
 	"reflect"
+	"sharedconfig"
 )
 
 // StructHandler will get ahandler func, and a json string
 // Using this as a middleware layer between http, and similar packages to unify and simplify
 // parameter passing and receiving from JSON format
 type StructHandler interface {
-	Process(handleFunc StructHandlerFunc, jsonStr string) (string, error)
+	Process(config sharedconfig.SharedConfiger, handleFunc StructHandlerFunc, jsonStr string) (string, error)
 }
 
 // New creates a new struct handler instanc
@@ -39,23 +40,26 @@ type handle struct {
 	validateJSONTags bool
 }
 
-func (t handle) Process(handleFunc StructHandlerFunc, jsonStr string) (string, error) {
+func (t handle) Process(config sharedconfig.SharedConfiger, handleFunc StructHandlerFunc, jsonStr string) (string, error) {
 	err := t.verify(handleFunc)
 	if err != nil {
 		return "", err
 	}
 
-	return t.processHandleFunc(handleFunc, jsonStr)
+	return t.processHandleFunc(config, handleFunc, jsonStr)
 }
 
-func (t handle) processHandleFunc(handlerFunc StructHandlerFunc, jsonStr string) (string, error) {
+func (t handle) processHandleFunc(config sharedconfig.SharedConfiger, handlerFunc StructHandlerFunc, jsonStr string) (string, error) {
 	ctx := context.Background()
+	ctxValue := reflect.ValueOf(&ctx)
+
+	configValue := reflect.ValueOf(config)
+	// fmt.Println(configValue.Kind())
+
 	funcValue := reflect.ValueOf(handlerFunc)
 	funcType := funcValue.Type()
 
-	ctxValue := reflect.ValueOf(&ctx)
-
-	dataType := funcType.In(1).Elem()
+	dataType := funcType.In(2).Elem()
 	dataPtr := reflect.New(dataType)
 	data := dataPtr.Elem()
 
@@ -64,7 +68,7 @@ func (t handle) processHandleFunc(handlerFunc StructHandlerFunc, jsonStr string)
 		return "", fmt.Errorf("error unmarshalling JSON: %w", err)
 	}
 
-	result := funcValue.Call([]reflect.Value{ctxValue, dataPtr})
+	result := funcValue.Call([]reflect.Value{ctxValue, configValue, dataPtr})
 	if !result[1].IsNil() {
 		errValue := result[1].Interface()
 		if err, ok := errValue.(error); ok {
@@ -89,16 +93,24 @@ func (t handle) verify(hFunc StructHandlerFunc) error {
 	}
 
 	funcType := funcValue.Type()
-	if funcType.NumIn() != 2 {
-		return fmt.Errorf("handler parameter function must have two parameters")
+	if funcType.NumIn() != 3 {
+		return fmt.Errorf("handler parameter function must have 3 parameters")
 	}
 
 	if funcType.In(0).Kind() != reflect.Ptr || funcType.In(0).Elem() != reflect.TypeOf((*context.Context)(nil)).Elem() {
 		return fmt.Errorf("handler parameter first parameter must be context.Context")
 	}
 
-	if funcType.In(1).Kind() != reflect.Ptr || funcType.In(1).Elem().Kind() != reflect.Struct {
-		return fmt.Errorf("handler parameter second parameter must be a struct")
+	if funcType.In(1).Kind() != reflect.Interface {
+		return fmt.Errorf("handler second parameter must be an interface")
+	}
+
+	if !funcType.In(1).Implements(reflect.TypeOf((*sharedconfig.SharedConfiger)(nil)).Elem()) {
+		return fmt.Errorf("handler second parameter must be sharedconfig.SharedConfiger")
+	}
+
+	if funcType.In(2).Kind() != reflect.Ptr || funcType.In(2).Elem().Kind() != reflect.Struct {
+		return fmt.Errorf("handler third parameter must be a struct")
 	}
 
 	if funcType.NumOut() != 2 {
@@ -114,7 +126,7 @@ func (t handle) verify(hFunc StructHandlerFunc) error {
 	}
 
 	if t.validateJSONTags {
-		dataType := funcType.In(1).Elem()
+		dataType := funcType.In(2).Elem()
 		hasJSONTag := true
 		for i := 0; i < dataType.NumField(); i++ {
 			field := dataType.Field(i)

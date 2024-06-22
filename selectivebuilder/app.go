@@ -70,9 +70,11 @@ func (t *application) getImports(packages []Package, buildType string) string {
 	}
 
 	if buildType == typeLambda {
-		builder.WriteString(fmt.Sprintf("	%s", lambdaImport))
+		builder.WriteString(fmt.Sprintf("	%s\n", lambdaImport))
+		builder.WriteString(fmt.Sprintf("	%s", lambdaConfigImport))
 	} else {
-		builder.WriteString(fmt.Sprintf("	%s", httpImport))
+		builder.WriteString(fmt.Sprintf("	%s\n", httpImport))
+		builder.WriteString(fmt.Sprintf("	%s", httpConfigImport))
 	}
 	return builder.String()
 }
@@ -83,7 +85,7 @@ func (t *application) getHandlers(packages []Package) string {
 		for _, handlerInfo := range packageInfo.Functions {
 			handlerParts := strings.Split(handlerInfo.Route, ":")
 			builder.WriteString(
-				fmt.Sprintf("		connector.HandlerDef{Route: \"%s\", Handler: %s.%s},\n", handlerParts[0], packageInfo.Name, handlerParts[1]),
+				fmt.Sprintf("		deploymentwrapper.HandlerDef{Route: \"%s\", Handler: %s.%s},\n", handlerParts[0], packageInfo.Name, handlerParts[1]),
 			)
 		}
 	}
