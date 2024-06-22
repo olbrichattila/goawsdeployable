@@ -6,6 +6,7 @@ import (
 	"sharedconfig"
 
 	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/credentials"
 )
 
 // New is a function to create a new shared config.
@@ -27,6 +28,11 @@ func (c *config) GetSQSConfig() *sharedconfig.SQSConfig {
 		AWSConfig: aws.Config{
 			Region:   aws.String("us-east-1"),
 			Endpoint: aws.String("http://localhost:4566"),
+			Credentials: credentials.NewStaticCredentials(
+				"your-access-key-id",     // Replace with your actual AWS Access Key ID
+				"your-secret-access-key", // Replace with your actual AWS Secret Access Key
+				"",
+			),
 		},
 	}
 }
