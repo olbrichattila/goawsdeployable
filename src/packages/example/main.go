@@ -15,21 +15,20 @@ type Request struct {
 
 // Response what we want to be returned as HTTP or Lambda
 type Response struct {
-	DispactherResult string `json:"dispatherResult"`
-	ResponseName     string `json:"respopnseName"`
-	ConfigType       string `json:"configType"`
+	ResponseName string `json:"respopnseName"`
+	ConfigType   string `json:"configType"`
 }
 
 // TestHandler is the unfied entry point of the module
 func TestHandler(_ *context.Context, config sharedconfig.SharedConfiger, request *Request) (*Response, error) {
-	dispatcherResult, err := dispather.NewDispatcher().Send(*request)
+	awsConfig := config.GetSQSConfig()
+	err := dispather.NewDispatcher(awsConfig).Send(*request)
 	if err != nil {
 		return nil, err
 	}
 
 	return &Response{
-		ResponseName:     request.Name,
-		DispactherResult: dispatcherResult,
-		ConfigType:       config.GetConfigType(),
+		ResponseName: request.Name,
+		ConfigType:   config.GetConfigType(),
 	}, nil
 }

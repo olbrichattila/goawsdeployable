@@ -70,33 +70,38 @@ The selective builder will verify if you missing any handler, incorectly specify
 
 ### Example:
 ```
-// Package example2 is just an example how to create a module accross AWS lambda or HTTP with the same code
-package example2
+// Package example is just an example how to create a module accross AWS lambda or HTTP with the same code
+package example
 
 import (
 	"context"
-	"fmt"
 	"sharedconfig"
+
+	dispather "sqseventdispatcher"
 )
 
-// The Request automatically marshalled here
+// Request data automaticall marhalled here
 type Request struct {
 	Name string `json:"name"`
 }
 
-// The response, which is unmarshalled automatically and returned in http or lambda response
+// Response what we want to be returned as HTTP or Lambda
 type Response struct {
-	ConfigType  string `json:"configType"`
-	RequestName string `json:"requestName"`
+	ResponseName string `json:"respopnseName"`
+	ConfigType   string `json:"configType"`
 }
 
 // TestHandler is the unfied entry point of the module
 func TestHandler(_ *context.Context, config sharedconfig.SharedConfiger, request *Request) (*Response, error) {
-	fmt.Println()
+	awsConfig := config.GetSQSConfig()
+	err := dispather.NewDispatcher(awsConfig).Send(*request)
+	if err != nil {
+		return nil, err
+	}
 
 	return &Response{
-		ConfigType:  config.GetConfigType(),
-		RequestName: request.Name,
+		ResponseName: request.Name,
+		ConfigType:   config.GetConfigType(),
 	}, nil
 }
 ```

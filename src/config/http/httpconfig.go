@@ -2,7 +2,11 @@
 // Please make sure you are using the same structure for both
 package httpconfig
 
-import "sharedconfig"
+import (
+	"sharedconfig"
+
+	"github.com/aws/aws-sdk-go/aws"
+)
 
 // New is a function to create a new shared config.
 // This is a config, with shared valeus, and lambda config specific values
@@ -14,6 +18,17 @@ func New() sharedconfig.SharedConfiger {
 
 type config struct {
 	// todo your config here
+}
+
+// GetSQSConfig implements sharedconfig.SharedConfiger.
+func (c *config) GetSQSConfig() *sharedconfig.SQSConfig {
+	return &sharedconfig.SQSConfig{
+		QueueURL: "http://localhost:4566/000000000000/test",
+		AWSConfig: aws.Config{
+			Region:   aws.String("us-east-1"),
+			Endpoint: aws.String("http://localhost:4566"),
+		},
+	}
 }
 
 func (c *config) GetConfigType() string {
