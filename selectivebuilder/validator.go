@@ -45,9 +45,18 @@ func (t *buildValidator) init(buildPackage Package) ([]string, []*funcLookupResu
 	functionLookups := make([]*funcLookupResult, len(buildPackage.Functions))
 
 	for i, fn := range buildPackage.Functions {
+
 		routeParts := strings.Split(fn.Route, ":")
-		routePaths[i] = routeParts[0]
-		functionLookups[i] = &funcLookupResult{name: routeParts[1], packageName: buildPackage.Name}
+		if len(routeParts) == 2 {
+			routePaths[i] = routeParts[0]
+			functionLookups[i] = &funcLookupResult{name: routeParts[1], packageName: buildPackage.Name}
+		}
+
+		sNSrouteParts := strings.Split(fn.SNSRoute, ":")
+		if len(sNSrouteParts) == 2 {
+			routePaths[i] = sNSrouteParts[0]
+			functionLookups[i] = &funcLookupResult{name: sNSrouteParts[1], packageName: buildPackage.Name}
+		}
 	}
 
 	files, err := readDir(packageDirectory)

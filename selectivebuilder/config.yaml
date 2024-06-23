@@ -3,7 +3,7 @@ lambda:
   packages:
     - name: example
       functions: 
-        - route: /:TestHandler
+        - snsroute: /:TestHandler
     - name: example2
       functions: 
         - route: /add:TestHandler
@@ -11,7 +11,7 @@ http:
   packages:
     - name: example
       functions: 
-        - route: /:TestHandler
+        - snsroute: /:TestHandler
     - name: example2
       functions: 
         - route: /add:TestHandler

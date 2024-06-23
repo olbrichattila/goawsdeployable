@@ -9,12 +9,13 @@ const (
 	sourceFolder = "../src/packages/"
 	buildFolder  = "../src/built/%s/"
 
-	lambdaImport       = "connector \"lambdalistener\""
-	httpImport         = "connector \"httplistener\""
-	lambdaConfigImport = "config \"lambdaconfig\""
-	httpConfigImport   = "config \"httpconfig\""
-	typeLambda         = "lambda"
-	typeHTTP           = "http"
+	sNSMiddlewareImport = "\"snsmiddleware\""
+	lambdaImport        = "connector \"lambdalistener\""
+	httpImport          = "connector \"httplistener\""
+	lambdaConfigImport  = "config \"lambdaconfig\""
+	httpConfigImport    = "config \"httpconfig\""
+	typeLambda          = "lambda"
+	typeHTTP            = "http"
 )
 
 // Add bash script to build, alternatively go mod tidy all subfolders and deployment wrapppers and so

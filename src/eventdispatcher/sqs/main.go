@@ -15,6 +15,7 @@ import (
 // Dispatcher event with Send(<your stryct>) error
 type Dispatcher interface {
 	Send(any) error
+	SendString(string) error
 }
 
 type dispatch struct {
@@ -41,7 +42,7 @@ func (t *dispatch) Send(v any) error {
 	}
 
 	messageBody := string(jsonBytes)
-	err = t.sendToSqs(messageBody)
+	err = t.SendString(messageBody)
 	if err != nil {
 		return err
 	}
@@ -49,7 +50,7 @@ func (t *dispatch) Send(v any) error {
 	return nil
 }
 
-func (t *dispatch) sendToSqs(messageBody string) error {
+func (t *dispatch) SendString(messageBody string) error {
 	sess := session.Must(session.NewSessionWithOptions(session.Options{
 		Config:  t.awsConfig.AWSConfig,
 		Profile: "default",

@@ -6,6 +6,7 @@ use (
 	./config
 	./config/http
 	./config/lambda
+	./config/local
 	./deploymentwrapper
 	./deploymentwrapper/http
 	./deploymentwrapper/lambda
@@ -14,4 +15,5 @@ use (
 	./packages
 	./packages/example
 	./packages/example2
+	./snsmiddleware
 )

@@ -64,9 +64,24 @@ func (t *application) build() error {
 }
 
 func (t *application) getImports(packages []Package, buildType string) string {
+	needSNSMiddlewareImport := false
 	var builder strings.Builder
 	for _, packageInfo := range packages {
+		if !needSNSMiddlewareImport {
+			for _, functions := range packageInfo.Functions {
+				sNSHandlerParts := strings.Split(functions.SNSRoute, ":")
+				if len(sNSHandlerParts) == 2 {
+					needSNSMiddlewareImport = true
+				}
+			}
+
+		}
+
 		builder.WriteString(fmt.Sprintf("	\"%s\"\n", packageInfo.Name))
+	}
+
+	if needSNSMiddlewareImport {
+		builder.WriteString(fmt.Sprintf("	%s\n", sNSMiddlewareImport))
 	}
 
 	if buildType == typeLambda {
@@ -84,9 +99,19 @@ func (t *application) getHandlers(packages []Package) string {
 	for _, packageInfo := range packages {
 		for _, handlerInfo := range packageInfo.Functions {
 			handlerParts := strings.Split(handlerInfo.Route, ":")
-			builder.WriteString(
-				fmt.Sprintf("		deploymentwrapper.HandlerDef{Route: \"%s\", Handler: %s.%s},\n", handlerParts[0], packageInfo.Name, handlerParts[1]),
-			)
+
+			if len(handlerParts) == 2 {
+				builder.WriteString(
+					fmt.Sprintf("		deploymentwrapper.HandlerDef{Route: \"%s\", Handler: %s.%s},\n", handlerParts[0], packageInfo.Name, handlerParts[1]),
+				)
+			}
+
+			sNSHandlerParts := strings.Split(handlerInfo.SNSRoute, ":")
+			if len(sNSHandlerParts) == 2 {
+				builder.WriteString(
+					fmt.Sprintf("		deploymentwrapper.HandlerDef{Route: \"%s\", Handler: snsmiddleware.Middleware(%s.%s)},\n", sNSHandlerParts[0], packageInfo.Name, sNSHandlerParts[1]),
+				)
+			}
 		}
 	}
 
