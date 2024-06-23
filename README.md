@@ -1,4 +1,11 @@
 ## This is a work in progress. !!!
+## And it's only a prototype
+
+An event is created on SQS will be pulled to SNS, the SNS will accept subscriptions, lambda and / or http. 
+The event processed by those applications in a unified way, and the developer don't have to know where the application was deployed.
+It is possible to create multiple lambda packages, and http (ec2) packages with different combination.
+
+There is a prototype which will write to the database, and will execute a list of pre-defined instructions starting whith one event.
 
 This package will be a framework where you can build a code what you can deploy to 
     - AWS lambda
