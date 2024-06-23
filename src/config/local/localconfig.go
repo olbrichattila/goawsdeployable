@@ -38,5 +38,5 @@ func (c *config) GetSQSConfig() *sharedconfig.SQSConfig {
 }
 
 func (c *config) GetConfigType() string {
-	return sharedconfig.TypeHttp
+	return sharedconfig.TypeLambda
 }

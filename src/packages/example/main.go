@@ -8,9 +8,23 @@ import (
 	"sqseventdispatcher"
 )
 
+type request struct {
+	Name string `json:"name"`
+}
+
+type response struct {
+	Request request `json:"request"`
+}
+
 // TestHandler is the unfied entry point of the module
-func TestHandler(_ *context.Context, config sharedconfig.SharedConfiger, request string) (string, error) {
+func TestHandler(_ *context.Context, config sharedconfig.SharedConfiger, request *request) (*response, error) {
 	dispatcher := sqseventdispatcher.NewDispatcher(config.GetSQSConfig())
-	dispatcher.SendString(request)
-	return request, nil
+	err := dispatcher.Send(*request)
+	if err != nil {
+		return nil, err
+	}
+
+	return &response{
+		Request: *request,
+	}, nil
 }

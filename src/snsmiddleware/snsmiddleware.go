@@ -9,7 +9,7 @@ import (
 	"sharedconfig"
 )
 
-type SnsHandler func(*context.Context, sharedconfig.SharedConfiger, string) (string, error)
+// type SnsHandler func(*context.Context, sharedconfig.SharedConfiger, string) (string, error)
 
 // TODO many of those values are not yet used
 type request struct {
@@ -45,7 +45,9 @@ type response struct {
 	ConfigType string   `json:"configType"`
 }
 
-func Middleware(handler SnsHandler) handler.StructHandlerFunc {
+func Middleware(handlerFunc any) handler.StructHandlerFunc {
+	haldlerExecutor := handler.New(true)
+
 	return func(ctx *context.Context, config sharedconfig.SharedConfiger, request *request) (*response, error) {
 		var responses []string
 		if request.Type == "SubscriptionConfirmation" {
@@ -59,7 +61,8 @@ func Middleware(handler SnsHandler) handler.StructHandlerFunc {
 		}
 
 		if config.GetConfigType() == sharedconfig.TypeHttp {
-			response, err := handler(ctx, config, asResponseItem(request).Message)
+			response, err := haldlerExecutor.Process(config, handlerFunc, asResponseItem(request).Message)
+			// response, err := handlerFunc(ctx, config, asResponseItem(request).Message)
 			if err != nil {
 				return nil, err
 			}
@@ -69,7 +72,8 @@ func Middleware(handler SnsHandler) handler.StructHandlerFunc {
 
 		if config.GetConfigType() == sharedconfig.TypeLambda {
 			for _, record := range request.Records {
-				response, err := handler(ctx, config, record.Sns.Message)
+				response, err := haldlerExecutor.Process(config, handlerFunc, record.Sns.Message)
+				// response, err := handlerFunc(ctx, config, record.Sns.Message)
 				if err != nil {
 					return nil, err
 				}
