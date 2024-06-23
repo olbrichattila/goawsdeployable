@@ -5,7 +5,6 @@ package example
 import (
 	"context"
 	"sharedconfig"
-	"sqseventdispatcher"
 )
 
 type request struct {
@@ -18,11 +17,11 @@ type response struct {
 
 // TestHandler is the unfied entry point of the module
 func TestHandler(_ *context.Context, config sharedconfig.SharedConfiger, request *request) (*response, error) {
-	dispatcher := sqseventdispatcher.NewDispatcher(config.GetSQSConfig())
-	err := dispatcher.Send(*request)
-	if err != nil {
-		return nil, err
-	}
+	// dispatcher := sqseventdispatcher.NewDispatcher(config.GetSQSConfig())
+	// err := dispatcher.Send(*request)
+	// if err != nil {
+	// 	return nil, err
+	// }
 
 	return &response{
 		Request: *request,

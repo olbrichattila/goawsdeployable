@@ -33,6 +33,14 @@ services:
     networks:
       - my-dev
 
+  message-distributor:
+    container_name: localstack-message-distributor
+    build:
+      context: ./messagedistributor
+      dockerfile: Dockerfile
+    networks:
+      - my-dev
+
   mysql:
     image: mysql:8.0
     container_name: mysql

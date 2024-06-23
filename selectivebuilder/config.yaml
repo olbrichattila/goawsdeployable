@@ -1,17 +1,14 @@
 port: 8080
 lambda:
   packages:
-    - name: example
+    - name: instructioner
       functions: 
-        - snsroute: /:TestHandler
+        - snsroute: /:Instruction
     - name: example2
       functions: 
         - route: /add:TestHandler
 http:
   packages:
-    - name: example
-      functions: 
-        - snsroute: /:TestHandler
     - name: example2
       functions: 
         - route: /add:TestHandler

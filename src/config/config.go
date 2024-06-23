@@ -13,9 +13,18 @@ const (
 type SharedConfiger interface {
 	GetConfigType() string
 	GetSQSConfig() *SQSConfig
+	GetDBConfig() *DBConfig
 }
 
 type SQSConfig struct {
 	QueueURL  string
 	AWSConfig aws.Config
+}
+
+type DBConfig struct {
+	Username string
+	Password string
+	Host     string
+	Port     int
+	Database string
 }

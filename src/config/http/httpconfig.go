@@ -40,3 +40,13 @@ func (c *config) GetSQSConfig() *sharedconfig.SQSConfig {
 func (c *config) GetConfigType() string {
 	return sharedconfig.TypeHttp
 }
+
+func (c *config) GetDBConfig() *sharedconfig.DBConfig {
+	return &sharedconfig.DBConfig{
+		Username: "myuser",
+		Password: "mypassword",
+		Host:     "mysql",
+		Port:     3306,
+		Database: "mydatabase",
+	}
+}

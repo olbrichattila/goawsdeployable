@@ -24,8 +24,6 @@ func hanlder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Println(body)
-
 	logRequest(string(body))
 }
 
@@ -35,7 +33,6 @@ func logRequest(str string) {
 		log.Fatalf("Failed to determine executable path: %v", err)
 	}
 	exeDir := filepath.Dir(exePath)
-	fmt.Println(exeDir)
 
 	logFilePath := filepath.Join(exeDir, "app.log")
 	logFile, err := os.OpenFile(logFilePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
